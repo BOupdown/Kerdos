@@ -1,9 +1,67 @@
 <template>
-  <main class="container">
-    <h1>Accueil</h1>
-  </main>
+  <div class="eleven">
+    <h1>Wiki CO2</h1>
+  </div>
+
+  <div class="center-image">
+    <img src="../assets/planet-4398004_1280-removebg-preview.png" alt="Image Description">
+  </div>
 </template>
 
 <script setup>
 </script>
+
+<style scoped>
+h1 {
+  position: relative;
+  padding: 0; 
+  margin: 0;
+  font-family: "Raleway", sans-serif;
+  font-weight: 300;
+  font-size: 40px;
+  color: #080808;
+  -webkit-transition: all 0.4s ease 0s;
+  -o-transition: all 0.4s ease 0s;
+  transition: all 0.4s ease 0s;
+}
+
+h1 span {
+  display: block;
+  font-size: 0.5em;
+  line-height: 1.3;
+}
+h1 em {
+  font-style: normal;
+  font-weight: 600;
+}
+
+.eleven h1 {
+  font-size:30px;text-align:center; line-height:1.5em; padding-bottom:45px; font-family:"Playfair Display", serif; text-transform:uppercase;letter-spacing: 2px; color:#111;
+}
+
+
+.eleven h1:before {
+  position: absolute;
+  left: 0;
+  bottom: 20px;
+  width: 60%;
+  left:50%; margin-left:-30%;
+  height: 1px;
+  content: "";
+  background-color: #777; z-index: 4;
+}
+.eleven h1:after {
+  position:absolute;
+  width:40px; height:40px; left:50%; margin-left:-20px; bottom:0px;
+  content: '\00a7'; font-size:30px; line-height:40px; color:#c50000;
+  font-weight:400; z-index: 5;
+  display:block;
+  background-color:#f8f8f8;
+}
+.center-image {
+  text-align: center;
+  margin-top: 100px; /* Ajuste la valeur selon tes besoins */
+}
+
+</style>
 
