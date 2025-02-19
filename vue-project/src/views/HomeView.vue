@@ -12,6 +12,7 @@
 </script>
 
 <style scoped>
+
 h1 {
   position: relative;
   padding: 0; 
