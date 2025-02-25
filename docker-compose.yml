@@ -1,0 +1,16 @@
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: kerdosbdd
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: "omarleboss"  
+      MYSQL_DATABASE: "Calculs"       
+    ports:
+      - "4306:3306"
+    volumes:
+      - ./bdd.sql:/docker-entrypoint-initdb.d/bdd.sql
+      - data:/var/lib/mysql
+
+volumes:
+  data:
