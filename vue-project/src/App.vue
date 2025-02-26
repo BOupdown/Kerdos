@@ -7,6 +7,7 @@ import { reactive } from 'vue';
     <div class="top-nav">
       <RouterLink to="/" class="nav-button">Accueil</RouterLink>
       <RouterLink to="/recherche" class="nav-button">Recherche</RouterLink>
+      <RouterLink to="/calculs" class="nav-button">Calculs</RouterLink>
       <RouterLink to="/chatbot" class="nav-button">Chatbot</RouterLink>
     </div>
 

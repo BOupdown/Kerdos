@@ -5,6 +5,8 @@ const cors = require('cors');
 
 const app = express();
 const port = 3000;
+const { spawn } = require('child_process');
+
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -89,6 +91,7 @@ app.post('/variables', (req, res, next) => {
     res.status(201).json({ id: result.insertId, name });
   });
 });
+
 
 app.listen(port, () => {
   console.log(`Serveur en écoute sur le port ${port}`);

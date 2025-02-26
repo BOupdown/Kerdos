@@ -3,7 +3,7 @@ import weaviate
 import uuid
 import weaviate.classes.config as wc
 import weaviate.classes as wvc
-from propre.processDataFct import processData
+from processDataFct import processData
 
 # A changer pour déploiement sur AWS ou autre
 def connect_to_db():
