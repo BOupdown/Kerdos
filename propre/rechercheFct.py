@@ -1,5 +1,6 @@
 from weaviate.classes.query import Filter
-from propre.bddFct import connect_to_db
+from bddFct import connect_to_db
+from flask import jsonify
 
 def search_more_relevant_document(queryN,embedder,cross_encoder,top_k):
     """Recherche des documents les plus pertinents correspondant à la recherche."""
@@ -99,5 +100,6 @@ def search_Rag(queryN,embedder_document,embedder_chunk,cross_encoder_document,cr
 
     # Recherche des chunks
     chunks = search_more_relevant_chunks_from_document_retrieved(queryN,embedder_chunk,[doc["document"] for doc in documents],cross_encoder_chunk,top_k_chunk)
-    
-    return chunks
+
+    return jsonify(chunks)  # Utilisation de Flask pour renvoyer un JSON valide
+
