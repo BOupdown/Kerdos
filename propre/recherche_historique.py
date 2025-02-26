@@ -16,7 +16,7 @@ cross_encoder = CrossEncoder("cross-encoder/ms-marco-electra-base")
 
 client = OpenAI(
   base_url="https://openrouter.ai/api/v1",
-  api_key="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",
+  api_key="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",
 )
 
 
@@ -102,7 +102,7 @@ def rag_system(question):
     # Assurez-vous que la recherche se fait dans le bon contexte Flask
     retrieved_info = ask_rag(question)
 
-    # Génération de la réponse via Gemma:2b
+    # Génération de la réponse 
     response = generate_answer(question, retrieved_info, contexte_recent)
 
     # Mise à jour de l'historique de la conversation
