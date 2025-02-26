@@ -10,7 +10,7 @@
     <div class="input-area">
       <input v-model="userInput" @keyup.enter="sendMessage" placeholder="Posez votre question..." />
       <button @click="sendMessage">Envoyer</button>
-      <button @click="toggleMode">{{ mode === 'chatbot' ? 'Recherche Internet' : 'Chatbot' }}</button>
+      <button @click="toggleMode">{{ mode === 'chatbot' ? '🌐' : '🤖' }}</button>
     </div>
   </div>
 </template>
@@ -86,14 +86,12 @@ export default {
 };
 </script>
 
-<style>
+<style scoped>
+
 .chatbot-container {
-  display: flex;
   flex-direction: column;
   height: 100%;
-  max-width: 600px;
-  margin: auto;
-  border: 1px solid #ccc;
+  width: 1000px;
   border-radius: 10px;
   overflow: hidden;
 }
@@ -103,8 +101,30 @@ export default {
   padding: 10px;
   overflow-y: auto;
   background-color: #f9f9f9;
+  height: 500px;
+  /* Personnalisation de la barre de défilement */
+  scrollbar-width: thin; /* Pour Firefox */
+  scrollbar-color: #007bff #f1f1f1; /* Pour Firefox */
 }
 
+/* Pour les navigateurs WebKit (Chrome, Safari, etc.) */
+.chat-window::-webkit-scrollbar {
+  width: 8px; /* Largeur de la barre de défilement */
+}
+
+.chat-window::-webkit-scrollbar-track {
+  background: #f1f1f1; /* Couleur de la piste de la barre de défilement */
+  border-radius: 10px;
+}
+
+.chat-window::-webkit-scrollbar-thumb {
+  background: #8a8a8a; /* Couleur du curseur de la barre de défilement */
+  border-radius: 10px;
+}
+
+.chat-window::-webkit-scrollbar-thumb:hover {
+  background: #575757; /* Couleur du curseur au survol */
+}
 .message {
   padding: 10px;
   margin: 5px;
@@ -159,7 +179,7 @@ export default {
 
 .input-area button {
   padding: 10px 20px;
-  background-color: #007bff;
+  background-color: #00a824;
   color: white;
   border: none;
   border-radius: 5px;
