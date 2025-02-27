@@ -19,9 +19,10 @@ def ask():
     if not user_query:
         return jsonify({'error': 'No question provided'}), 400
     
-    response = rag_system(user_query)
+    response, sources = rag_system(user_query)
     
-    return jsonify({'answer': response})
+    return jsonify({'answer': response, 'sources': sources})
+
 
 @app.route('/ask2', methods=['POST'])
 def ask2():

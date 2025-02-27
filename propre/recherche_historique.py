@@ -137,5 +137,3 @@ def rag_system(question):
         conversation_history.pop(0)
 
     return response,sources
-
-

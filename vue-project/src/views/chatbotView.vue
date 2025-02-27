@@ -4,6 +4,14 @@
       <div v-for="(message, index) in messages" :key="index" :class="message.sender">
         <div class="message">
           {{ message.text }}
+          <div v-if="message.sources && message.sources.length" class="sources">
+            <strong>Sources :</strong>
+            <ul>
+              <li v-for="(source, i) in message.sources" :key="i">
+                <a :href="source" target="_blank">{{ source }}</a>
+              </li>
+            </ul>
+          </div>
         </div>
       </div>
     </div>
@@ -21,7 +29,7 @@ export default {
     return {
       userInput: '',
       messages: [],
-      mode: 'chatbot' // 'chatbot' ou 'internet'
+      mode: 'chatbot'
     };
   },
   methods: {
@@ -53,7 +61,11 @@ export default {
         });
 
         const data = await response.json();
-        this.messages.push({ sender: 'bot', text: data.answer });
+        this.messages.push({
+          sender: 'bot',
+          text: data.answer,
+          sources: data.sources || [] // Ajout des sources si elles existent
+        });
       } catch (error) {
         console.error('Erreur lors de la communication avec l\'API:', error);
         this.messages.push({ sender: 'bot', text: 'Désolé, une erreur s\'est produite.' });
@@ -71,7 +83,11 @@ export default {
         });
 
         const data = await response.json();
-        this.messages.push({ sender: 'bot', text: data.answer });
+        this.messages.push({
+          sender: 'bot',
+          text: data.answer,
+          sources: data.sources || [] // Ajout des sources si elles existent
+        });
       } catch (error) {
         console.error('Erreur lors de la communication avec l\'API:', error);
         this.messages.push({ sender: 'bot', text: 'Désolé, une erreur s\'est produite.' });
@@ -87,7 +103,6 @@ export default {
 </script>
 
 <style scoped>
-
 .chatbot-container {
   flex-direction: column;
   height: 100%;
@@ -102,29 +117,28 @@ export default {
   overflow-y: auto;
   background-color: #f9f9f9;
   height: 500px;
-  /* Personnalisation de la barre de défilement */
-  scrollbar-width: thin; /* Pour Firefox */
-  scrollbar-color: #007bff #f1f1f1; /* Pour Firefox */
+  scrollbar-width: thin;
+  scrollbar-color: #007bff #f1f1f1;
 }
 
-/* Pour les navigateurs WebKit (Chrome, Safari, etc.) */
 .chat-window::-webkit-scrollbar {
-  width: 8px; /* Largeur de la barre de défilement */
+  width: 8px;
 }
 
 .chat-window::-webkit-scrollbar-track {
-  background: #f1f1f1; /* Couleur de la piste de la barre de défilement */
+  background: #f1f1f1;
   border-radius: 10px;
 }
 
 .chat-window::-webkit-scrollbar-thumb {
-  background: #8a8a8a; /* Couleur du curseur de la barre de défilement */
+  background: #8a8a8a;
   border-radius: 10px;
 }
 
 .chat-window::-webkit-scrollbar-thumb:hover {
-  background: #575757; /* Couleur du curseur au survol */
+  background: #575757;
 }
+
 .message {
   padding: 10px;
   margin: 5px;
@@ -160,6 +174,29 @@ export default {
 .system .message {
   background-color: #ffcc00;
   color: black;
+}
+
+.sources {
+  margin-top: 5px;
+  font-size: 12px;
+  color: #666;
+}
+
+.sources ul {
+  padding-left: 15px;
+}
+
+.sources li {
+  list-style: none;
+}
+
+.sources a {
+  color: #007bff;
+  text-decoration: none;
+}
+
+.sources a:hover {
+  text-decoration: underline;
 }
 
 .input-area {
