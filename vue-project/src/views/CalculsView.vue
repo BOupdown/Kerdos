@@ -1,52 +1,55 @@
 <template>
   <div class="container">
-    <h1 class="title">Créer une nouvelle formule</h1>
-    <form @submit.prevent="addFormule" class="form">
-      <label for="formuleName" class="label">Nom de la formule:</label>
-      <input type="text" id="formuleName" v-model="formuleName" required class="input common-width">
+    <div class="creation-section">
+      <h1 class="title">Créer une nouvelle formule</h1>
+      <form @submit.prevent="addFormule" class="form">
+        <label for="formuleName" class="label">Nom de la formule:</label>
+        <input type="text" id="formuleName" v-model="formuleName" required class="input common-width">
 
-      <label class="label">Formule:</label>
-      <div class="formula-builder common-width">
-        <div class="formula-display">{{ formuleFormula || "Cliquez sur les variables ou opérateurs pour construire la formule" }}</div>
-        <div class="variables-list">
-          <select v-model="selectedVariable" @change="addToFormula(selectedVariable)" class="variable-select common-width">
-            <option disabled value="">Sélectionnez une variable</option>
-            <option v-for="variable in variables" :key="variable.id" :value="variable.name">
-              {{ variable.name }}
-            </option>
-          </select>
-          <button v-for="operator in operators" :key="operator" @click.prevent="addToFormula(operator)" class="operator-button">
-            {{ operator }}
-          </button>
+        <label class="label">Formule:</label>
+        <div class="formula-builder common-width">
+          <div class="formula-display">{{ formuleFormula || "Cliquez sur les variables ou opérateurs pour construire la formule" }}</div>
+          <div class="variables-list">
+            <select v-model="selectedVariable" @change="addToFormula(selectedVariable)" class="variable-select common-width">
+              <option disabled value="">Sélectionnez une variable</option>
+              <option v-for="variable in variables" :key="variable.id" :value="variable.name">
+                {{ variable.name }}
+              </option>
+            </select>
+            <button v-for="operator in operators" :key="operator" @click.prevent="addToFormula(operator)" class="operator-button">
+              {{ operator }}
+            </button>
+          </div>
         </div>
-        
-      </div>
 
-      <button type="submit" class="button">Ajouter Formule</button>
-      <button @click.prevent="resetForm" type="button" class="button reset-button">Réinitialiser</button>
-      <div v-if="formuleMessage" :class="{'success': formuleSuccess, 'error': !formuleSuccess}" class="message">
-        {{ formuleMessage }}
-      </div>
-    </form>
+        <button type="submit" class="button">Ajouter Formule</button>
+        <button @click.prevent="resetForm" type="button" class="button reset-button">Réinitialiser</button>
+        <div v-if="formuleMessage" :class="{'success': formuleSuccess, 'error': !formuleSuccess}" class="message">
+          {{ formuleMessage }}
+        </div>
+      </form>
 
-    <h1 class="title">Ajouter une nouvelle variable</h1>
-    <form @submit.prevent="addVariable" class="form">
-      <label for="variableName" class="label">Nom de la variable:</label>
-      <input type="text" id="variableName" v-model="variableName" required class="input common-width">
-      <div>
-        <button type="submit" class="button">Ajouter Variable</button>
-      </div>
-      <div v-if="variableMessage" :class="{'success': variableSuccess, 'error': !variableSuccess}" class="message">
-        {{ variableMessage }}
-      </div>
-    </form>
+      <h1 class="title">Ajouter une nouvelle variable</h1>
+      <form @submit.prevent="addVariable" class="form">
+        <label for="variableName" class="label">Nom de la variable:</label>
+        <input type="text" id="variableName" v-model="variableName" required class="input common-width">
+        <div>
+          <button type="submit" class="button">Ajouter Variable</button>
+        </div>
+        <div v-if="variableMessage" :class="{'success': variableSuccess, 'error': !variableSuccess}" class="message">
+          {{ variableMessage }}
+        </div>
+      </form>
+    </div>
 
-    <h2 class="title">Formules enregistrées</h2>
-    <ul>
-      <li v-for="formule in formules" :key="formule.id" class="common-width">
-        <strong>{{ formule.name }}</strong> : <span class="resformule">{{ formule.formula }}</span>
-      </li>
-    </ul>
+    <div class="display-section">
+      <h2 class="title">Formules enregistrées</h2>
+      <ul>
+        <li v-for="formule in formules" :key="formule.id" class="common-width">
+          <strong>{{ formule.name }}</strong> : <span class="resformule">{{ formule.formula }}</span>
+        </li>
+      </ul>
+    </div>
   </div>
 </template>
 
@@ -135,10 +138,21 @@ export default {
 
 <style scoped>
 .container {
-  max-width: 800px;
+  display: grid;
+  grid-template-columns: 1fr 1fr; /* Deux colonnes de largeur égale */
+  gap: 20px; /* Espace entre les colonnes */
+  max-width: 1200px; /* Ajustez la largeur maximale selon vos besoins */
   margin: 0 auto;
   padding: 20px;
   font-family: Arial, sans-serif;
+}
+
+.creation-section,
+.display-section {
+  padding: 20px;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  background-color: #00000067;
 }
 
 .title {
@@ -158,7 +172,7 @@ export default {
   color: #0078da;
 }
 
-.resformule{
+.resformule {
   color: rgb(255, 106, 0);
 }
 
@@ -166,18 +180,17 @@ export default {
 .variable-select,
 .formula-builder,
 li {
-  width: 500px; /* Même largeur */
-  max-width: 100%;
+  width: 100%; /* Utilisez 100% de la largeur disponible */
   padding: 10px;
   margin-bottom: 15px;
-  border: 1px solid #ccc;
+  border: 1px solid #2e2e2e;
   border-radius: 5px;
   font-size: 16px;
   box-sizing: border-box;
 }
 
 .button {
-  background-color: #508dff;
+  background-color: #2fa700;
   color: white;
   border: none;
   padding: 10px 20px;
@@ -204,7 +217,7 @@ li {
   padding: 10px;
   font-size: 18px;
   background: white;
-  border: 1px solid #ddd;
+  border: 1px solid #000000;
   margin-bottom: 15px;
   border-radius: 5px;
   text-align: left;
@@ -218,7 +231,7 @@ li {
 }
 
 .operator-button {
-  background-color: #007bff;
+  background-color: #41002d;
   color: white;
   border: none;
   padding: 10px 15px;
@@ -255,7 +268,7 @@ ul {
 }
 
 li {
-  background: #f1f1f1;
+  background: #fdf0f03a;
   margin-bottom: 10px;
   padding: 10px;
   border-radius: 5px;
@@ -267,8 +280,8 @@ li strong {
 }
 
 .reset-button {
-  background-color: #f0ad4e;
-  color: white;
+  background-color: #f30000;
+  color: fdf0f03a;
   border: none;
   padding: 10px 20px;
   cursor: pointer;

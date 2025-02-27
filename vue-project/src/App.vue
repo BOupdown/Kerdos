@@ -8,6 +8,7 @@ import { reactive } from 'vue';
       <RouterLink to="/" class="nav-button">Accueil</RouterLink>
       <RouterLink to="/recherche" class="nav-button">Recherche</RouterLink>
       <RouterLink to="/chatbot" class="nav-button">Chatbot</RouterLink>
+      <RouterLink to="/calculs" class="nav-button">Calculs</RouterLink>
     </div>
 
     <div class="eleven">
@@ -34,7 +35,7 @@ import { reactive } from 'vue';
 }
 
 .container {
-  padding-top: 60px;
+  padding-top: 120px; /* Ajustez cette valeur pour éviter que le contenu ne soit caché sous le titre fixe */
 }
 
 .eleven {
@@ -42,7 +43,12 @@ import { reactive } from 'vue';
   color: #aca2a2;
   font-family: 'Times New Roman', Times, serif;
   font-size: 30px;
-  margin-top: 20px;
+  position: fixed;
+  top: 60px; /* Ajustez cette valeur pour positionner le titre sous la barre de navigation */
+  left: 0;
+  width: 100%;
+  z-index: 999;
+  padding: 10px 0; /* Ajoutez un peu de padding pour l'espacement */
 }
 
 .nav-button {
