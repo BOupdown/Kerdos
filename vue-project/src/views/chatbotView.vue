@@ -27,78 +27,88 @@
 export default {
   data() {
     return {
-      userInput: '',
+      userInput: "",
       messages: [],
-      mode: 'chatbot'
+      mode: "chatbot",
     };
   },
   methods: {
     async sendMessage() {
-      if (this.userInput.trim() === '') return;
+      if (this.userInput.trim() === "") return;
 
-      // Ajouter le message de l'utilisateur
-      this.messages.push({ sender: 'user', text: this.userInput });
+      this.messages.push({ sender: "user", text: this.userInput });
 
-      // Choisir la méthode en fonction du mode
-      if (this.mode === 'chatbot') {
+      if (this.mode === "chatbot") {
         await this.sendToChatbot();
       } else {
         await this.sendToInternet();
       }
 
-      // Effacer l'entrée utilisateur
-      this.userInput = '';
+      this.userInput = "";
     },
 
     async sendToChatbot() {
       try {
-        const response = await fetch('http://localhost:7000/ask', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
+        const response = await fetch("http://localhost:7000/ask", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ question: this.userInput }),
         });
 
         const data = await response.json();
         this.messages.push({
-          sender: 'bot',
-          text: data.answer,
-          sources: data.sources || [] // Ajout des sources si elles existent
+          sender: "bot",
+          text: this.markdownToPlainText(data.answer), // Convertir le Markdown en texte brut
+          sources: data.sources || [],
         });
       } catch (error) {
-        console.error('Erreur lors de la communication avec l\'API:', error);
-        this.messages.push({ sender: 'bot', text: 'Désolé, une erreur s\'est produite.' });
+        console.error("Erreur API :", error);
+        this.messages.push({ sender: "bot", text: "Erreur de communication." });
       }
     },
 
     async sendToInternet() {
       try {
-        const response = await fetch('http://localhost:7000/ask2', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
+        const response = await fetch("http://localhost:7000/ask2", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ question: this.userInput }),
         });
 
         const data = await response.json();
         this.messages.push({
-          sender: 'bot',
-          text: data.answer,
-          sources: data.sources || [] // Ajout des sources si elles existent
+          sender: "bot",
+          text: this.markdownToPlainText(data.answer), // Convertir le Markdown en texte brut
         });
       } catch (error) {
-        console.error('Erreur lors de la communication avec l\'API:', error);
-        this.messages.push({ sender: 'bot', text: 'Désolé, une erreur s\'est produite.' });
+        console.error("Erreur API :", error);
+        this.messages.push({ sender: "bot", text: "Erreur de communication." });
       }
     },
 
     toggleMode() {
-      this.mode = this.mode === 'chatbot' ? 'internet' : 'chatbot';
-      this.messages.push({ sender: 'system', text: `Mode changé en : ${this.mode}` });
-    }
-  }
+      this.mode = this.mode === "chatbot" ? "internet" : "chatbot";
+      this.messages.push({ sender: "system", text: `Mode changé en : ${this.mode}` });
+    },
+
+    markdownToPlainText(markdown) {
+  // Supprimer les balises HTML
+  let text = markdown.replace(/<[^>]*>/g, '');
+
+  // Convertir les éléments Markdown en texte avec mise en forme visuelle
+  text = text.replace(/^\s*>\s*/gm, '➤ '); // Citations
+  text = text.replace(/\*\*(.*?)\*\*/g, '⦿ $1 ⦿'); // Texte en gras
+  text = text.replace(/\*(.*?)\*/g, '_$1_'); // Texte en italique
+  text = text.replace(/^\s*\d+\.\s*/gm, '🔹 '); // Listes numérotées
+  text = text.replace(/^\s*-\s*/gm, '• '); // Listes à puces
+  text = text.replace(/```[\s\S]*?```/g, '[Bloc de code]'); // Blocs de code
+  text = text.replace(/`(.*?)`/g, '[$1]'); // Code en ligne
+  text = text.replace(/\[(.*?)\]\((.*?)\)/g, '$1 ($2)'); // Liens (affiche le texte + URL)
+
+  return text;
+}
+,
+  },
 };
 </script>
 

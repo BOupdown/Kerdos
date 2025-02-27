@@ -9,9 +9,11 @@ from recherche_historique import recuperer_historique_recent
 # Clé API et ID moteur de recherche pour Google Custom Search
 API_KEY = 'AIzaSyBdaQew_B0cvIp1iLxsUPCtG8xtzgluZDM'
 SEARCH_ENGINE_ID = '14514bd4afbb647a0'
+modele = "cognitivecomputations/dolphin3.0-r1-mistral-24b:free"
+num_results=5
 
 # Fonction de Recherche Web avec Google Custom Search
-def web_search(query, num_results=5):
+def web_search(query, num_results):
     """Effectue une recherche sur Internet et retourne les résultats depuis des sites spécifiques."""
 
     # Filtrer les mots inutiles dans la question
@@ -47,9 +49,9 @@ def rag_system_websearch(question):
     contexte_recent = recuperer_historique_recent(question)
 
     # Recherche Web pour obtenir des informations pertinentes
-    retrieved_info = web_search(question)  
+    retrieved_info = web_search(question, num_results)  
     
     # Génération de la réponse
-    response = generate_answer(question, retrieved_info, contexte_recent)
+    response,source = generate_answer(question, retrieved_info,modele, contexte_recent)
     
     return response

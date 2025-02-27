@@ -14,7 +14,7 @@ modele = "cognitivecomputations/dolphin3.0-r1-mistral-24b:free"
 
 client = OpenAI(
   base_url="https://openrouter.ai/api/v1",
-  api_key="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",
+  api_key="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",
 )
 
 
@@ -56,7 +56,7 @@ def ask_rag(user_query):
     if len(conversation_history) > history_limit:
         conversation_history.pop(0)
 
-    prompt = generate_rephrasing(user_query, conversation_history)
+    prompt = generate_rephrasing(user_query, conversation_history, modele)
     # Rechercher des résultats pertinents
     results = search_Rag(prompt, embedder, embedder, cross_encoder, cross_encoder, topk, topk)  # Assurez-vous que `search` accepte un prompt formaté
     return results
@@ -83,10 +83,10 @@ def extract_documents(text, retrieved_info):
 
 
 # Système RAG : Recherche + Génération
-def generate_answer(query, retrieved_info,modele, contexte_recent):
+def generate_answer(query, retrieved_info, modele, contexte_recent):
     """Génère une réponse en utilisant les documents et le contexte."""
 
-    queryRephrase = generate_rephrasing(query, conversation_history)
+    queryRephrase = generate_rephrasing(query, conversation_history, modele)
 
     # chunks = [f"{i+1}: {doc['content']}" for i, doc in enumerate(retrieved_info)]
     chunks = [f"Titre : {doc['document']}: {doc['content']}" for i, doc in enumerate(retrieved_info)]
@@ -129,7 +129,7 @@ def rag_system(question):
     retrieved_info = ask_rag(question)
 
     # Génération de la réponse via Gemma:2b
-    response,sources = generate_answer(question, retrieved_info, contexte_recent)
+    response,sources = generate_answer(question, retrieved_info, modele, contexte_recent)
 
     conversation_history.append(f"[Système]: {response}")
 
