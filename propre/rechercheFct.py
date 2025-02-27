@@ -82,7 +82,6 @@ def search_more_relevant_chunks_from_document_retrieved(queryN,embedder,document
         "title": properties.get('title')
     })
 
-    print(documents)
     # # Calcul des scores avec le cross-encoder
     cross_scores = cross_encoder.predict([(queryN, doc["content"]) for doc in documents])
 
