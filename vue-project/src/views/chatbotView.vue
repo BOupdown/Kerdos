@@ -17,8 +17,10 @@
     </div>
     <div class="input-area">
       <input v-model="userInput" @keyup.enter="sendMessage" placeholder="Posez votre question..." />
-      <button @click="sendMessage">Envoyer</button>
-      <button @click="toggleMode">{{ mode === 'chatbot' ? '🌐' : '🤖' }}</button>
+      <button @click="sendMessage" class="boutonenvoyer">Envoyer</button>
+      <button @click="toggleMode" class="toggle-button">
+        {{ mode === 'chatbot' ? '🌐' : '🤖' }}
+      </button>
     </div>
   </div>
 </template>
@@ -33,82 +35,67 @@ export default {
     };
   },
   methods: {
-    async sendMessage() {
-      if (this.userInput.trim() === "") return;
+  async sendMessage() {
+    if (this.userInput.trim() === "") return;
 
-      this.messages.push({ sender: "user", text: this.userInput });
+    this.messages.push({ sender: "user", text: this.userInput });
 
-      if (this.mode === "chatbot") {
-        await this.sendToChatbot();
-      } else {
-        await this.sendToInternet();
-      }
+    if (this.mode === "chatbot") {
+      await this.sendToChatbot();
+    } else {
+      await this.sendToInternet();
+    }
 
-      this.userInput = "";
-    },
-
-    async sendToChatbot() {
-      try {
-        const response = await fetch("http://localhost:7000/ask", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ question: this.userInput }),
-        });
-
-        const data = await response.json();
-        this.messages.push({
-          sender: "bot",
-          text: this.markdownToPlainText(data.answer), // Convertir le Markdown en texte brut
-          sources: data.sources || [],
-        });
-      } catch (error) {
-        console.error("Erreur API :", error);
-        this.messages.push({ sender: "bot", text: "Erreur de communication." });
-      }
-    },
-
-    async sendToInternet() {
-      try {
-        const response = await fetch("http://localhost:7000/ask2", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ question: this.userInput }),
-        });
-
-        const data = await response.json();
-        this.messages.push({
-          sender: "bot",
-          text: this.markdownToPlainText(data.answer), // Convertir le Markdown en texte brut
-        });
-      } catch (error) {
-        console.error("Erreur API :", error);
-        this.messages.push({ sender: "bot", text: "Erreur de communication." });
-      }
-    },
-
-    toggleMode() {
-      this.mode = this.mode === "chatbot" ? "internet" : "chatbot";
-      this.messages.push({ sender: "system", text: `Mode changé en : ${this.mode}` });
-    },
-
-    markdownToPlainText(markdown) {
-  // Supprimer les balises HTML
-  let text = markdown.replace(/<[^>]*>/g, '');
-
-  // Convertir les éléments Markdown en texte avec mise en forme visuelle
-  text = text.replace(/^\s*>\s*/gm, '➤ '); // Citations
-  text = text.replace(/\*\*(.*?)\*\*/g, '⦿ $1 ⦿'); // Texte en gras
-  text = text.replace(/\*(.*?)\*/g, '_$1_'); // Texte en italique
-  text = text.replace(/^\s*\d+\.\s*/gm, '🔹 '); // Listes numérotées
-  text = text.replace(/^\s*-\s*/gm, '• '); // Listes à puces
-  text = text.replace(/```[\s\S]*?```/g, '[Bloc de code]'); // Blocs de code
-  text = text.replace(/`(.*?)`/g, '[$1]'); // Code en ligne
-  text = text.replace(/\[(.*?)\]\((.*?)\)/g, '$1 ($2)'); // Liens (affiche le texte + URL)
-
-  return text;
-}
-,
+    this.userInput = "";
   },
+
+  async sendToChatbot() {
+    try {
+      const response = await fetch("http://localhost:7000/ask", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ question: this.userInput }),
+      });
+
+      const data = await response.json();
+      const formattedAnswer = data.answer.replace(/Extrait/g, 'Extrait\n');
+      this.messages.push({
+        sender: "bot",
+        text: formattedAnswer,
+        sources: data.sources || [],
+      });
+    } catch (error) {
+      console.error("Erreur API :", error);
+      this.messages.push({ sender: "bot", text: "Erreur de communication." });
+    }
+  },
+
+  async sendToInternet() {
+    try {
+      const response = await fetch("http://localhost:7000/ask2", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ question: this.userInput }),
+      });
+
+      const data = await response.json();
+      const formattedAnswer = data.answer.replace(/Extrait/g, 'Extrait\n');
+      this.messages.push({
+        sender: "bot",
+        text: formattedAnswer,
+      });
+    } catch (error) {
+      console.error("Erreur API :", error);
+      this.messages.push({ sender: "bot", text: "Erreur de communication." });
+    }
+  },
+
+  toggleMode() {
+    this.mode = this.mode === "chatbot" ? "internet" : "chatbot";
+    this.messages.push({ sender: "system", text: `Mode changé en : ${this.mode}` });
+  },
+},
+
 };
 </script>
 
@@ -116,10 +103,38 @@ export default {
 .chatbot-container {
   flex-direction: column;
   height: 100%;
-  width: 1000px;
+  width: 1750px;
   border-radius: 10px;
   overflow: hidden;
 }
+
+.toggle-button {
+  background-color: #181616; /* Nouvelle couleur */
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.toggle-button:hover {
+  background-color: #4b4b4b; /* Couleur au survol */
+}
+
+.boutonenvoyer {
+  background-color: #2baa55; /* Nouvelle couleur */
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.boutonenvoyer:hover {
+  background-color: #006d06; /* Couleur au survol */
+}
+
+
 
 .chat-window {
   flex: 1;
@@ -226,7 +241,6 @@ export default {
 
 .input-area button {
   padding: 10px 20px;
-  background-color: #00a824;
   color: white;
   border: none;
   border-radius: 5px;
@@ -234,7 +248,4 @@ export default {
   margin-right: 10px;
 }
 
-.input-area button:hover {
-  background-color: #0056b3;
-}
 </style>

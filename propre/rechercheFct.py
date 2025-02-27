@@ -96,9 +96,16 @@ def search_Rag(queryN,embedder_document,embedder_chunk,cross_encoder_document,cr
 
     # Recherche des documents
     documents = search_more_relevant_document(queryN,embedder_document,cross_encoder_document,top_k_document)
+    print("DOOOOOOOOOOOOOOOOOOOOOOOOOCCCC")
+    print(documents)
+    print("DOOOOOOOOOOOOOOOOOOOOOOOOOCCCC")
 
     # Recherche des chunks
     chunks = search_more_relevant_chunks_from_document_retrieved(queryN,embedder_chunk,[doc["document"] for doc in documents],cross_encoder_chunk,top_k_chunk)
 
-    return jsonify(chunks)  # Utilisation de Flask pour renvoyer un JSON valide
+    print("CHCCCCCCCCCCCHUNKS")
+    print(chunks)
+    print("CHCCCCCCCCCCCHUNKS")
+
+    return chunks  # Utilisation de Flask pour renvoyer un JSON valide
 

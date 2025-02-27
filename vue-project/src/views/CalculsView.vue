@@ -173,7 +173,7 @@ export default {
 }
 
 .resformule {
-  color: rgb(255, 106, 0);
+  color: rgb(255, 0, 0);
 }
 
 .input,
@@ -183,7 +183,7 @@ li {
   width: 100%; /* Utilisez 100% de la largeur disponible */
   padding: 10px;
   margin-bottom: 15px;
-  border: 1px solid #2e2e2e;
+  border: 1px solid #ffffff;
   border-radius: 5px;
   font-size: 16px;
   box-sizing: border-box;
@@ -268,7 +268,7 @@ ul {
 }
 
 li {
-  background: #fdf0f03a;
+  background: #ffffff;
   margin-bottom: 10px;
   padding: 10px;
   border-radius: 5px;

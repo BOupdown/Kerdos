@@ -14,13 +14,9 @@ modele = "cognitivecomputations/dolphin3.0-r1-mistral-24b:free"
 
 client = OpenAI(
   base_url="https://openrouter.ai/api/v1",
-  api_key="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",
+  api_key="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",
 )
 
-
-# Gérer le contexte conversationnel
-conversation_history = []  # Stockage de l'historique
-history_limit = 6  # Nombre de tours de conversation gardés
 
 # Gérer le contexte conversationnel
 conversation_history = []  # Stockage de l'historique
@@ -57,6 +53,10 @@ def ask_rag(user_query):
         conversation_history.pop(0)
 
     prompt = generate_rephrasing(user_query, conversation_history, modele)
+    print("PPPPPPPPPPPPPPPPPPPPPPPPPPPROMPT")
+    print(prompt)
+    print("PPPPPPPPPPPPPPPPPPPPPPPPPPPROMPT")
+
     # Rechercher des résultats pertinents
     results = search_Rag(prompt, embedder, embedder, cross_encoder, cross_encoder, topk, topk)  # Assurez-vous que `search` accepte un prompt formaté
     return results
@@ -85,7 +85,6 @@ def extract_documents(text, retrieved_info):
 # Système RAG : Recherche + Génération
 def generate_answer(query, retrieved_info, modele, contexte_recent):
     """Génère une réponse en utilisant les documents et le contexte."""
-
     queryRephrase = generate_rephrasing(query, conversation_history, modele)
 
     # chunks = [f"{i+1}: {doc['content']}" for i, doc in enumerate(retrieved_info)]
