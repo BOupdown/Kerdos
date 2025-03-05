@@ -24,9 +24,6 @@
 
         <button type="submit" class="button">Ajouter Formule</button>
         <button @click.prevent="resetForm" type="button" class="button reset-button">Réinitialiser</button>
-        <div v-if="formuleMessage" :class="{'success': formuleSuccess, 'error': !formuleSuccess}" class="message">
-          {{ formuleMessage }}
-        </div>
       </form>
 
       <h1 class="title">Ajouter une nouvelle variable</h1>
@@ -35,9 +32,6 @@
         <input type="text" id="variableName" v-model="variableName" required class="input common-width">
         <div>
           <button type="submit" class="button">Ajouter Variable</button>
-        </div>
-        <div v-if="variableMessage" :class="{'success': variableSuccess, 'error': !variableSuccess}" class="message">
-          {{ variableMessage }}
         </div>
       </form>
     </div>
