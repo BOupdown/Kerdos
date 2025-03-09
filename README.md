@@ -145,14 +145,15 @@ La génération de texte avec recherche internet prend aussi en compte l'histori
 
 # Calculs
 
-La partie calculs présente une page divisée en 2.
+La partie Calculs présente une interface utilisateur intuitive, divisée en deux sections principales pour une expérience utilisateur optimale. 
 
-A gauche, on trouve le form qui permet de creer des variables et de creer de formules à partir de variables existantes.
-Le form utilise les POST et GET qui se trouvent dans propre/apiCalculs.
-Les Get et les Post sont effectués sur la BDD mysql en local.
+##Section gauche : Création de variables et formules
+À gauche, un formulaire interactif permet aux utilisateurs de créer des variables et de générer des formules en utilisant les variables existantes. Ce formulaire repose sur des requêtes HTTP de type POST et GET, gérées par l'API propre/apiCalculs. Ces requêtes interagissent directement avec une base de données MySQL locale, stockant les variables et les formules dans les tables respectives `variables` et `formules`. Par exemple, lorsqu'un utilisateur crée une nouvelle variable, celle-ci est immédiatement enregistrée dans la table `variables`, et peut ensuite être référencée dans une formule via son `id` ou son `name`. De même, les formules créées sont stockées dans la table `formules`, avec une structure claire et organisée.
 
-A droite, on retrouve toutes les formules qui ont été créees.
+##Section droite : Affichage des formules 
+À droite, l'interface affiche toutes les formules qui ont été créées et enregistrées dans la base de données. Cette section est dynamique et se met à jour en temps réel dès qu'une nouvelle formule est ajoutée ou modifiée. Les utilisateurs peuvent ainsi visualiser l'ensemble des calculs disponibles, ce qui facilite la gestion et l'utilisation des formules existantes.
 
-L'interface permet une interaction fluide entre les deux sections. Par exemple, une variable créée dans la partie gauche peut immédiatement être utilisée dans une nouvelle formule, et les résultats sont mis à jour en temps réel.
+##Interaction fluide entre les sections
+L'interface est conçue pour offrir une interaction fluide entre les deux sections. Par exemple, lorsqu'une variable est créée dans la section gauche, elle devient immédiatement disponible pour être utilisée dans une nouvelle formule. Les résultats des calculs sont mis à jour en temps réel, offrant une expérience réactive et intuitive. Cette synergie entre les sections permet aux utilisateurs de travailler de manière efficace, sans avoir à recharger la page ou à effectuer des actions supplémentaires.
 
-
+En résumé, cette interface combine une gestion robuste des données via une base de données MySQL locale avec une expérience utilisateur réactive et intuitive, facilitant la création et l'utilisation de variables et de formules.
