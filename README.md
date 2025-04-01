@@ -56,7 +56,7 @@ top_k : le nombre de document à retourné après le rerank actuellement 10
 Il est possible de modifier le nombre d'élément à rerank dans la fonction actuellement 20.
 Cette fonction repose sur la fonction de weaviate de recherche hybride qui contient de nombreux paramètres pouvant plus ou moins amélioré les résultats. Elle cherche dans la collection Document.
 
-Elle obtient un score de 60% de réussite sur des requêtes provenant du fichier (à compléter).
+Elle obtient un score de 60% de réussite sur des requêtes provenant du fichier gain_CO2.xlsx.
 Ce pourcentage peut être amélioré en finetunant le reranker sur les données pour le top 20 sans reranker on obtient un score de 86%.
 
 # Chatbot :
@@ -77,52 +77,23 @@ documents : le titre des documents dans lesquels on veut chercher les chunks les
 top_k : le nombre de document à retourné après le rerank actuellement 10.
 Cette fonction est basée sur une recherche purement vectorielle qui se fait via une fonction de weaviate filtrer sur les documents recupérés en paramètres. Elle cherche dans la collection Chunk. Il est possible de changer le nombre d'élément à rerank actuellement 20.
 
+## Génération de texte :
+Une fois que les documents les plus pertinents en réponse à la requête de l'utilisateur ont été identifiés par le système de retrieval, nous allons générer du texte à partir de ces documents.
+
 ### Génération sans web search :
 La génération de texte sans recherche internet fonctionne en plusieurs étapes :
 
-#### Récupérer l'historique de la conversation
-Dans 'recherche_historique.py' nous avons la variable history_limit qui correspond au nombre d'échanges de la discussion que l'on veut garder en contexte.
+1. Récupérer l'historique de la conversation
 
-#### Réinterprétation de la question avec l'historique
-Dans notre système, nous devons nous assurer que chaque question de l'utilisateur est compréhensible sans dépendre de l'historique de la conversation. Pour cela, nous avons mis en place une étape de reformulation automatique qui reformule la question si nécessaire.
+2. Réinterpréter la question de l'utilisateur avec l'historique pour formuler une question autonome qui peut être comprise sans avoir besoin de l'historique
 
-Cette étape doit se faire grâce à un LLM.
+Pour cela on utilise le modèle Dolphin3.0 R1 Mistral 24B avec l'API de OpenRouter.
 
-L'identification à l'API Open Router se fait comme cela dans le fichier 'recherche_historique.py':
-client = OpenAI(
-  base_url="https://openrouter.ai/api/v1",
-  api_key="votre_clé_API",
-)
+Pourquoi utiliser OpenRouter
 
-Pour générer la clé API sur OpenRouter :
-1. S'inscrire sur OpenRouter
-2. Profil > Clé > Créer une clé
-
-Une clé API sera générée. Gardez la clé quelque part en sécurité.
-
-
-Le choix du modèle Mistral se fait dans le fichier 'recherche.py' et se présente sous cette forme :
-modele = "votre_modele_ici"
-
-
-L'appel au modèle se fait dans 'recherche_historique.py' et se présente sous cette forme :
-response = client.chat.completions.create(
-    model=modele, 
-    messages=[
-        {"role": "system", "content": "votre_prompt_machine_ici"},
-
-        {"role": "user", "content": "votre_prompt_utilisateur_ici"}
-    ]
-)
-
-Un prompt est défini pour le rôle system, qui correspond aux instructions du chatbot. Ce prompt doit inclure toutes les directives que le chatbot doit suivre pour générer ses réponses. Il peut être modifié et optimisé grâce au prompt engineering, ce qui peut améliorer la qualité des résultats.  
-
-Un autre prompt est attribué au rôle user, représentant l'utilisateur. Il doit inclure, entre autres, la question posée ainsi que le contexte de la conversation. Comme pour le prompt du chatbot, des ajustements via le prompt engineering peuvent permettre d'affiner les réponses générées.
-
-#### Réponse à la question réinterprétée
-Cette étape se fait grâce à OpenRouter et au même modèle Mistral pour les mêmes raisons.
-
-On récupère également le contexte et on génère un prompt différent de l'étape précédente, tout en restant similaire.
+Nous avons décidé de prendre ce modèle pour ces raisons : 
+- Modèle puissant avec une meilleure compréhension du français que d'autres modèles
+- Modèle de 24 milliards de paramètres donc très précis
 
 
 ### Génération avec web search :
