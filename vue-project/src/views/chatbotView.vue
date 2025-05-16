@@ -51,8 +51,9 @@ export default {
 
   async sendToChatbot() {
     try {
-      const response = await fetch("http://localhost:7000/ask", {
+      const response = await fetch("http://localhost:5000/chatbot/ask", {
         method: "POST",
+        mode: "cors",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ question: this.userInput }),
       });
@@ -72,8 +73,9 @@ export default {
 
   async sendToInternet() {
     try {
-      const response = await fetch("http://localhost:7000/ask2", {
+      const response = await fetch("http://localhost:5000/chatbot/ask2", {
         method: "POST",
+        mode: "cors",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ question: this.userInput }),
       });

@@ -2,10 +2,17 @@ import sys
 import json
 from rechercheFct import search_more_relevant_document
 from sentence_transformers import SentenceTransformer, CrossEncoder
+import os
 
 # Charger les modèles
-embedder = SentenceTransformer("paraphrase-multilingual-mpnet-base-v2")
-cross_encoder = CrossEncoder("cross-encoder/ms-marco-electra-base")
+
+
+EMBEDDING_MODEL = os.getenv("EMBEDDING_MODEL")
+CROSS_ENCODING_MODEL = os.getenv("CROSS_ENCODER_MODEL")
+
+
+embedder = SentenceTransformer(EMBEDDING_MODEL)
+cross_encoder = CrossEncoder(CROSS_ENCODING_MODEL)
 
 def main(query):
     # Paramètres de recherche
