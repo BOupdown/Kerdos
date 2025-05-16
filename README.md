@@ -1,24 +1,39 @@
+# Avant le lancement
+
+Il faut se rendre dans le .env et remplir les variables manquantes.
+
+API_KEY_OPEN_ROUTER : Créer un compte sur https://openrouter.ai/ puis aller dans votre profil puis keys puis create API Key et copié collé la key.
+
+API_KEY_WEB_SEARCH & SEARCH_ENGINE_ID : Suivre la procédure décrite dans la partie Génération avec web search
+
+
 # Démarrer l'application
 
-docker-compose up
-python3 lancerApi.py
-cd vue-project
-npm run dev
+Pour le premier lancement (il faut attendre environ 15 min): 
 
-# Arrêter les Api
+docker compose up --build
 
-python3 stopApi.py
+Pour les prochains lancements une fois que le buld est fait : 
+
+docker compose up 
+
 
 # Changements de modèles
 
-Dans l'objectif de changer les modèles utilisés pour optimiser les résultats, voici où il faut changer chacun des modèles.
-Modèle d'embeddings, actuellement : paraphrase-multilingual-mpnet-base-v2
+Dans l'objectif de changer les modèles utilisés pour optimiser les résultats, il faut changer les modèles dans le .env.
+
+Modèle d'embeddings, actuellement : paraphrase-multilingual-mpnet-base-v2 : 
+
 app.py, initDb, rechercheHistorique, rechercher
-Modèle de reranking (CrossEncoder) actuellement : cross-encoder/ms-marco-electra-base
-app.py, rechercher_historique,rechercher
+
+Modèle de reranking (CrossEncoder) actuellement : cross-encoder/ms-marco-electra-base : 
+
+app.py, rechercher_historique,rechercher*
+
 Ces modèles fonctionnent avec la librairies d'HuggingFace sentence_Transformers. 
-Modèle de langage, actuellement : cognitivecomputations/dolphin3.0-r1-mistral-24b:free 
-recherche_historique.py
+Modèle de langage, actuellement : cognitivecomputations/dolphin3.0-r1-mistral-24b:free :
+
+recherche_historique.py.
 Ce modèle fonctionne avec l'API de Open Router.
 
 # Base de données
@@ -70,11 +85,17 @@ Cette double recherche permet d'éviter de retrouver des chunks similaire d'autr
 Cette recherche se base sur la fonction search rag du fichier rechercheFct et retourne une liste de document avec le titre du doucment, le titre de la section, le codeK du document et le contenu de la section.
 
 Elle est composée de la fonction search_more_relevant_document et de la fonction search_more_relevant_chunks_from_document_retrieved qui a comme paramètre : 
+
 query : une requête en langage naturel.
+
 embedder : un modèle de vectorisation ici paraphrase-multilingual-mpnet-base-v2
+
 cross_encoder : un modèle de reranking ici cross-encoder/ms-marco-electra-base
+
 documents : le titre des documents dans lesquels on veut chercher les chunks les plus pertinents
+
 top_k : le nombre de document à retourné après le rerank actuellement 10.
+
 Cette fonction est basée sur une recherche purement vectorielle qui se fait via une fonction de weaviate filtrer sur les documents recupérés en paramètres. Elle cherche dans la collection Chunk. Il est possible de changer le nombre d'élément à rerank actuellement 20.
 
 ## Génération de texte :
@@ -132,7 +153,7 @@ Pour générer la clé API, il faut :
 
 Une clé API sera générée. Gardez la clé quelque part en sécurité.
 
-Ensuite, dans le fichier 'recherche.py' changer les variables :
+Ensuite, dans le fichier .env changer les variables :
 API_KEY = 'votre_clé_API'
 SEARCH_ENGINE_ID = 'votre_identifiant_moteur_de_recherche'
 
@@ -147,13 +168,13 @@ La génération de texte avec recherche internet prend aussi en compte l'histori
 
 La partie Calculs présente une interface utilisateur intuitive, divisée en deux sections principales pour une expérience utilisateur optimale. 
 
-##Section gauche : Création de variables et formules
+## Section gauche : Création de variables et formules
 À gauche, un formulaire interactif permet aux utilisateurs de créer des variables et de générer des formules en utilisant les variables existantes. Ce formulaire repose sur des requêtes HTTP de type POST et GET, gérées par l'API propre/apiCalculs. Ces requêtes interagissent directement avec une base de données MySQL locale, stockant les variables et les formules dans les tables respectives `variables` et `formules`. Par exemple, lorsqu'un utilisateur crée une nouvelle variable, celle-ci est immédiatement enregistrée dans la table `variables`, et peut ensuite être référencée dans une formule via son `id` ou son `name`. De même, les formules créées sont stockées dans la table `formules`, avec une structure claire et organisée.
 
-##Section droite : Affichage des formules 
+## Section droite : Affichage des formules 
 À droite, l'interface affiche toutes les formules qui ont été créées et enregistrées dans la base de données. Cette section est dynamique et se met à jour en temps réel dès qu'une nouvelle formule est ajoutée ou modifiée. Les utilisateurs peuvent ainsi visualiser l'ensemble des calculs disponibles, ce qui facilite la gestion et l'utilisation des formules existantes.
 
-##Interaction fluide entre les sections
+## Interaction fluide entre les sections
 L'interface est conçue pour offrir une interaction fluide entre les deux sections. Par exemple, lorsqu'une variable est créée dans la section gauche, elle devient immédiatement disponible pour être utilisée dans une nouvelle formule. Les résultats des calculs sont mis à jour en temps réel, offrant une expérience réactive et intuitive. Cette synergie entre les sections permet aux utilisateurs de travailler de manière efficace, sans avoir à recharger la page ou à effectuer des actions supplémentaires.
 
 En résumé, cette interface combine une gestion robuste des données via une base de données MySQL locale avec une expérience utilisateur réactive et intuitive, facilitant la création et l'utilisation de variables et de formules.
