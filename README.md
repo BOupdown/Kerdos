@@ -4,7 +4,7 @@ Il faut se rendre dans le .env et remplir les variables manquantes.
 
 API_KEY_OPEN_ROUTER : Créer un compte sur https://openrouter.ai/ puis aller dans votre profil puis keys puis create API Key et copié collé la key.
 
-API_KEY_WEB_SEARCH & SEARCH_ENGINE_ID : Suivre la procédure décrite dans la partie Génération avec web search
+API_KEY_WEB_SEARCH & SEARCH_ENGINE_ID : Suivre la procédure décrite dans la partie Génération avec web search [Génération avec web search](### Génération avec web search:)
 
 
 # Démarrer l'application
