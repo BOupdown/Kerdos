@@ -4,7 +4,7 @@ Il faut se rendre dans le .env et remplir les variables manquantes.
 
 API_KEY_OPEN_ROUTER : Créer un compte sur https://openrouter.ai/ puis aller dans votre profil puis keys puis create API Key et copié collé la key.
 
-API_KEY_WEB_SEARCH & SEARCH_ENGINE_ID : Suivre la procédure décrite dans la partie [Génération avec web search](#generation-avec-web-search)
+API_KEY_WEB_SEARCH & SEARCH_ENGINE_ID : Suivre la procédure décrite dans la partie [Generation avec web search](#generation-avec-web-search)
 
 
 
@@ -118,7 +118,7 @@ Nous avons décidé de prendre ce modèle pour ces raisons :
 - Modèle de 24 milliards de paramètres donc très précis
 
 
-### Génération avec web search
+### Generation avec web search
 La génération de texte avec la recherhe internet fonctionne avec un moteur de recherche personnalisé.
 
 Pour ce moteur de recherche nous avons choisi Google Programmable Search Engine pour les raisons suivantes :
