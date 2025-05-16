@@ -1,19 +1,25 @@
-from flask import Flask, request, jsonify
+import os
+from flask import Flask, request, jsonify, Blueprint
+from flask_cors import CORS, cross_origin
 import mysql.connector
 from mysql.connector import Error
-from flask_cors import CORS
 
 app = Flask(__name__)
-CORS(app)  # Active CORS
+CORS(app, resources={r"/calculs/*": {"origins": "*"}})
 
+calculs_bp = Blueprint("calculs", __name__)
 # Configuration de la connexion à la base de données
+
+password = os.getenv("MYSQL_ROOT_PASSWORD")
+database = os.getenv("MYSQL_DATABASE")
+
 def get_db_connection():
     try:
         conn = mysql.connector.connect(
             host="localhost",
             user="root",
-            password="omarleboss",
-            database="Calculs",
+            password=password,
+            database=database,
             port=4306,
             connection_timeout=60  # Timeout de 60 secondes
         )
@@ -23,7 +29,8 @@ def get_db_connection():
         return None
 
 # Route pour récupérer toutes les formules (GET)
-@app.route('/formules', methods=['GET'])
+@calculs_bp.route("/formules", methods=["GET", "OPTIONS"])
+@cross_origin(origins="*")
 def get_formules():
     conn = get_db_connection()
     if not conn:
@@ -38,7 +45,8 @@ def get_formules():
     return jsonify(results)
 
 # Route pour ajouter une nouvelle formule (POST)
-@app.route('/formules', methods=['POST'])
+@calculs_bp.route("/formules", methods=["POST", "OPTIONS"])
+@cross_origin(origins="*")
 def add_formule():
     data = request.json
     name = data.get('name')
@@ -63,7 +71,8 @@ def add_formule():
     return jsonify({"id": inserted_id, "name": name, "formula": formula}), 201
 
 # Route pour récupérer toutes les variables (GET)
-@app.route('/variables', methods=['GET'])
+@calculs_bp.route("/variables", methods=["GET", "OPTIONS"])
+@cross_origin(origins="*")
 def get_variables():
     conn = get_db_connection()
     if not conn:
@@ -77,8 +86,8 @@ def get_variables():
     conn.close()
     return jsonify(results)
 
-# Route pour ajouter une nouvelle variable (POST)
-@app.route('/variables', methods=['POST'])
+@calculs_bp.route("/variables", methods=["POST", "OPTIONS"])
+@cross_origin(origins="*")
 def add_variable():
     data = request.json
     name = data.get('name')
@@ -101,6 +110,7 @@ def add_variable():
 
     return jsonify({"id": inserted_id, "name": name}), 201
 
-# Lancer le serveur Flask
-if __name__ == '__main__':
-    app.run(port=3000, debug=False)
+app.register_blueprint(calculs_bp, url_prefix="/calculs")
+
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=5000)

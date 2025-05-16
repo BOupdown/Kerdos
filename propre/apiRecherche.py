@@ -1,17 +1,25 @@
 import sys
 import json
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, Blueprint
 from rechercheFct import search_more_relevant_document
 from sentence_transformers import SentenceTransformer, CrossEncoder
 from flask_cors import CORS
+from flask_cors import cross_origin
+import os
+
 
 # Initialize Flask app and enable CORS
 app = Flask(__name__)
-CORS(app)  # Enable CORS for all routes
+CORS(app, resources={r"/recherche/*": {"origins": "*"}})
+recherche_bp = Blueprint("recherche", __name__)
+
+EMBEDDING_MODEL = os.getenv("EMBEDDING_MODEL")
+CROSS_ENCODING_MODEL = os.getenv("CROSS_ENCODER_MODEL")
+
 
 # Load models
-embedder = SentenceTransformer("paraphrase-multilingual-mpnet-base-v2")
-cross_encoder = CrossEncoder("cross-encoder/ms-marco-electra-base")
+embedder = SentenceTransformer(EMBEDDING_MODEL)
+cross_encoder = CrossEncoder(CROSS_ENCODING_MODEL)
 
 def search(query):
     top_k = 10
@@ -19,7 +27,8 @@ def search(query):
     results = [{"codeK": i + 1, "content": doc} for i, doc in enumerate(documents)]
     return results
 
-@app.route('/search', methods=['POST'])
+@recherche_bp.route('/search', methods=['POST', 'OPTIONS'])
+@cross_origin(origins="*")  # autorise toutes origines sur ce endpoint
 def handle_search():
     data = request.get_json()
     query = data.get('query', '')
@@ -31,6 +40,7 @@ def handle_search():
         return jsonify({"error": "Aucune requête fournie"}), 400
 
 
+app.register_blueprint(recherche_bp, url_prefix="/recherche")
 
 if __name__ == "__main__":
-    app.run(debug=False, host='0.0.0.0', port=5000)
+    app.run(host="0.0.0.0", port=5000)

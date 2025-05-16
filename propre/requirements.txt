@@ -1,0 +1,12 @@
+fastapi
+uvicorn
+numpy
+sentence-transformers
+transformers
+torch
+Flask>=2.0
+flask-cors
+openai
+weaviate-client
+mysql-connector-python>=8.0
+nltk

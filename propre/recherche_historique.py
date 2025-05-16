@@ -3,18 +3,25 @@ from sentence_transformers import SentenceTransformer, CrossEncoder, util
 import re
 from transformers import AutoTokenizer 
 from flask import current_app
+import os
 
 
 from openai import OpenAI
 from rechercheFct import search_Rag
 
-embedder = SentenceTransformer("paraphrase-multilingual-mpnet-base-v2")
-cross_encoder = CrossEncoder("cross-encoder/ms-marco-electra-base")
-modele = "cognitivecomputations/dolphin3.0-r1-mistral-24b:free"
+EMBEDDING_MODEL = os.getenv("EMBEDDING_MODEL")
+CROSS_ENCODING_MODEL = os.getenv("CROSS_ENCODER_MODEL")
+API_KEY_OPEN_ROUTER = os.getenv("API_KEY_OPEN_ROUTER")
+LLM_MODELE = os.getenv("LLM_MODEL")
+
+
+embedder = SentenceTransformer(EMBEDDING_MODEL)
+cross_encoder = CrossEncoder(CROSS_ENCODING_MODEL)
+
 
 client = OpenAI(
   base_url="https://openrouter.ai/api/v1",
-  api_key="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",
+  api_key=API_KEY_OPEN_ROUTER,
 )
 
 
@@ -22,10 +29,10 @@ client = OpenAI(
 conversation_history = []  # Stockage de l'historique
 history_limit = 6  # Nombre de tours de conversation gardés
 
-def generate_rephrasing(query, contexte_recent,modele):
+def generate_rephrasing(query, contexte_recent,LLM_MODELE):
     """Reformule la question et le contexte pour un meilleur retrieval."""
     
-    response = client.chat.completions.create(model=modele, messages=[
+    response = client.chat.completions.create(model=LLM_MODELE, messages=[
         {"role": "system", "content": "Étant donné un historique de conversation et la dernière question de l'utilisateur qui pourrait faire référence à un contexte dans l'historique de conversation, formule une question autonome qui peut être comprise sans avoir besoin de l'historique. Ne réponds PAS à la question, reformulez-la simplement si nécessaire, sinon retourne-la telle quelle. Parle en français"},
 
         {"role": "user", "content": f"Question : {query}\nContexte :\n{contexte_recent}\nRéponse :"}
@@ -52,10 +59,7 @@ def ask_rag(user_query):
     if len(conversation_history) > history_limit:
         conversation_history.pop(0)
 
-    prompt = generate_rephrasing(user_query, conversation_history, modele)
-    print("PPPPPPPPPPPPPPPPPPPPPPPPPPPROMPT")
-    print(prompt)
-    print("PPPPPPPPPPPPPPPPPPPPPPPPPPPROMPT")
+    prompt = generate_rephrasing(user_query, conversation_history, LLM_MODELE)
 
     # Rechercher des résultats pertinents
     results = search_Rag(prompt, embedder, embedder, cross_encoder, cross_encoder, topk, topk)  # Assurez-vous que `search` accepte un prompt formaté
@@ -83,9 +87,9 @@ def extract_documents(text, retrieved_info):
 
 
 # Système RAG : Recherche + Génération
-def generate_answer(query, retrieved_info, modele, contexte_recent):
+def generate_answer(query, retrieved_info, LLM_MODELE, contexte_recent):
     """Génère une réponse en utilisant les documents et le contexte."""
-    queryRephrase = generate_rephrasing(query, conversation_history, modele)
+    queryRephrase = generate_rephrasing(query, conversation_history, LLM_MODELE)
 
     # chunks = [f"{i+1}: {doc['content']}" for i, doc in enumerate(retrieved_info)]
     chunks = [f"Titre : {doc['document']}: {doc['content']}" for i, doc in enumerate(retrieved_info)]
@@ -113,7 +117,7 @@ def generate_answer(query, retrieved_info, modele, contexte_recent):
         """},
         {"role": "user", "content": f"Question : {queryRephrase}\nInfos trouvées :\n{chunks}\nRéponse :"}
     ]
-    response = client.chat.completions.create(model=modele, messages=message
+    response = client.chat.completions.create(model=LLM_MODELE, messages=message
     )
     sources = extract_documents(response.choices[0].message.content, retrieved_info)
     return response.choices[0].message.content,sources
@@ -128,7 +132,7 @@ def rag_system(question):
     retrieved_info = ask_rag(question)
 
     # Génération de la réponse via Gemma:2b
-    response,sources = generate_answer(question, retrieved_info, modele, contexte_recent)
+    response,sources = generate_answer(question, retrieved_info, LLM_MODELE, contexte_recent)
 
     conversation_history.append(f"[Système]: {response}")
 

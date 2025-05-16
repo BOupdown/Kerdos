@@ -6,9 +6,36 @@ import weaviate.classes as wvc
 from processDataFct import processData
 
 # A changer pour déploiement sur AWS ou autre
-def connect_to_db():
-    """Connection à la base de données Weaviate."""
-    return weaviate.connect_to_local()
+import os
+import weaviate
+import time
+
+def connect_to_db(retries: int = 5, delay: int = 3):
+    """
+    Essaie de se connecter à Weaviate via connect_to_local().
+    Réessaie plusieurs fois tant que le client n'est pas prêt.
+    """
+    host = os.getenv("WEAVIATE_HOST", "weaviate")
+    port = int(os.getenv("WEAVIATE_PORT", 8080))
+    grpc_port = int(os.getenv("WEAVIATE_GRPC_PORT", 50051))
+
+    for attempt in range(1, retries + 1):
+        try:
+            client = weaviate.connect_to_local(
+                host=host,
+                port=port,
+                grpc_port=grpc_port,
+            )
+            if client.is_ready():  # test de readiness
+                print(f"Weaviate prêt (tentative {attempt})")
+                return client
+            else:
+                print(f"Weaviate non prêt, attente {delay}s (tentative {attempt})")
+        except Exception as e:
+            print(f"Erreur connexion Weaviate (tentative {attempt}): {e}")
+        time.sleep(delay)
+
+    raise RuntimeError("Impossible de se connecter à Weaviate après plusieurs tentatives.")
 
 def create_class_Document():
     """Créer la classe Document dans Weaviate."""

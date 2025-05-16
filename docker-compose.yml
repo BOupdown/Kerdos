@@ -1,38 +1,105 @@
+version: "3.8"
+volumes:
+  data:
+  weaviate_data:
+  frontend_node_modules:
+
 services:
   mysql:
     image: mysql:8.0
     container_name: kerdosbdd
     restart: always
     environment:
-      MYSQL_ROOT_PASSWORD: "omarleboss"  
-      MYSQL_DATABASE: "Calculs"       
+      MYSQL_ROOT_PASSWORD: "${MYSQL_ROOT_PASSWORD}"
+      MYSQL_DATABASE:       "${MYSQL_DATABASE}"
+
     ports:
       - "4306:3306"
     volumes:
       - ./bdd.sql:/docker-entrypoint-initdb.d/bdd.sql
       - data:/var/lib/mysql
-  
-  weaviate:
-    command:
-    - --host
-    - 0.0.0.0
-    - --port
-    - '8080'
-    - --scheme
-    - http
-    image: cr.weaviate.io/semitechnologies/weaviate:1.29.0
-    ports:
-    - 8080:8080
-    - 50051:50051
-    volumes:
-    - weaviate_data:/var/lib/weaviate
-    restart: on-failure:0
-    environment:
-      QUERY_DEFAULTS_LIMIT: 25
-      AUTHENTICATION_ANONYMOUS_ACCESS_ENABLED: 'true'
-      PERSISTENCE_DATA_PATH: '/data/weaviate'
-      CLUSTER_HOSTNAME: 'node1'
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
-volumes:
-  data:
-  weaviate_data:
+  weaviate:
+    image: cr.weaviate.io/semitechnologies/weaviate:1.29.0
+    container_name: kerdosweaviate
+    restart: on-failure
+    command:
+      - --host
+      - 0.0.0.0
+      - --port
+      - "8080"
+      - --scheme
+      - http
+    environment:
+      QUERY_DEFAULTS_LIMIT:              "${QUERY_DEFAULTS_LIMIT}"
+      AUTHENTICATION_ANONYMOUS_ACCESS_ENABLED: "${AUTHENTICATION_ANONYMOUS_ACCESS_ENABLED}"
+      PERSISTENCE_DATA_PATH:             "${PERSISTENCE_DATA_PATH}"
+      CLUSTER_HOSTNAME:                  "${CLUSTER_HOSTNAME}"
+
+    ports:
+      - "8080:8080"
+      - "50051:50051"
+    volumes:
+      - weaviate_data:/data/weaviate
+
+  backend:
+    build:
+      context: ./propre
+      dockerfile: Dockerfile
+    container_name: kerdosbackend
+    restart: always
+    env_file:
+      - .env
+    environment:
+      WEAVIATE_HOST:     "${WEAVIATE_HOST}"
+      WEAVIATE_PORT:     "${WEAVIATE_PORT}"
+      WEAVIATE_GRPC_PORT: "${WEAVIATE_GRPC_PORT}"
+      API_KEY_WEB_SEARCH: "${API_KEY_WEB_SEARCH}"
+      SEARCH_ENGINE_ID:  "${SEARCH_ENGINE_ID}"
+      EMBEDDING_MODEL:   "${EMBEDDING_MODEL}"
+      CROSS_ENCODER_MODEL: "${CROSS_ENCODER_MODEL}"
+      LLM_MODEL:         "${LLM_MODEL}"
+      API_KEY_OPEN_ROUTER: "${API_KEY_OPEN_ROUTER}"
+
+    depends_on:
+      mysql:
+        condition: service_healthy
+      weaviate:
+        condition: service_started
+    working_dir: /app
+    volumes:
+      - ./propre:/app
+    # Nom exact de votre script dans ./propre
+    command: >
+      sh -c "
+        echo 'Initialisation de la BDD…' &&
+        python3 initDb.py &&
+        echo 'BDD initialisée, démarrage des APIs…' &&
+        python3 app.py
+      "
+
+    ports:
+      - "5000:5000"
+
+  frontend:
+    build:
+      context: ./vue-project
+      dockerfile: Dockerfile
+    container_name: kerdosfrontend
+    restart: always
+    depends_on:
+      - backend
+    working_dir: /app
+    volumes:
+      - ./vue-project:/app
+      - frontend_node_modules:/app/node_modules
+    command: npm run dev -- --host 0.0.0.0
+
+    # exposer le vrai port que Vite utilise
+    ports:
+      - "5173:5173"

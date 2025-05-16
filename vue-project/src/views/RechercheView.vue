@@ -43,29 +43,28 @@
       methods: {
         async search() {
           if (this.query.trim()) {
-            this.loading = true; // Commence la recherche
+            this.loading = true;
             try {
-              const response = await fetch("http://localhost:5000/search", {
+              const response = await fetch("http://localhost:5000/recherche/search", {
                 method: "POST",
-                headers: {
-                  "Content-Type": "application/json",
-                },
+                headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ query: this.query }),
               });
-    
+
               if (response.ok) {
                 this.results = await response.json();
                 this.displayResultsGradually();
               } else {
-                console.error("Erreur lors de la recherche");
+                console.error("Erreur lors de la recherche", response.status);
               }
             } catch (error) {
               console.error("Erreur de connexion:", error);
             } finally {
-              this.loading = false; // Fin de la recherche
+              this.loading = false;
             }
           }
         },
+
     
         displayResultsGradually() {
           this.displayedResults = [];

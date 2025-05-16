@@ -4,12 +4,12 @@ from recherche_historique import generate_answer
 import nltk
 from nltk.corpus import stopwords
 from recherche_historique import recuperer_historique_recent
-
+import os
 
 # Clé API et ID moteur de recherche pour Google Custom Search
-API_KEY = 'AIzaSyBdaQew_B0cvIp1iLxsUPCtG8xtzgluZDM'
-SEARCH_ENGINE_ID = '14514bd4afbb647a0'
-modele = "cognitivecomputations/dolphin3.0-r1-mistral-24b:free"
+API_KEY = os.getenv("API_KEY_WEB_SEARCH")
+SEARCH_ENGINE_ID = os.getenv("SEARCH_ENGINE_ID")
+MODELE_LLM = os.getenv("LLM_MODEL")
 num_results=5
 
 # Fonction de Recherche Web avec Google Custom Search
@@ -52,6 +52,6 @@ def rag_system_websearch(question):
     retrieved_info = web_search(question, num_results)  
     
     # Génération de la réponse
-    response,source = generate_answer(question, retrieved_info,modele, contexte_recent)
+    response,source = generate_answer(question, retrieved_info,MODELE_LLM, contexte_recent)
     
     return response
